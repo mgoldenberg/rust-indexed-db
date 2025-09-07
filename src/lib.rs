@@ -86,6 +86,7 @@
 //!
 //! # async fn example() -> indexed_db_futures::OpenDbResult<()> {
 //! # #[allow(dead_code)]
+//! # #[cfg(all(feature = "async-upgrade", feature = "tx-done"))]
 //! let db = Database::open("my_db")
 //!     .with_version(2u8)
 //!     .with_on_blocked(|event| {
@@ -142,6 +143,8 @@
 //! ## Reading/writing with `serde`
 //!
 //! ```
+//! # #[cfg(feature = "serde")]
+//! # mod wrapper {
 //! # use indexed_db_futures::object_store::ObjectStore;
 //! # use indexed_db_futures::prelude::*;
 //! # use serde::{Deserialize, Serialize};
@@ -158,6 +161,7 @@
 //! let user: Option<UserRef> = object_store.get(1u32).serde()?.await?;
 //! # Ok(())
 //! # }
+//! # }
 //! ```
 //!
 //! # Iterating a cursor
@@ -167,6 +171,7 @@
 //! # use indexed_db_futures::prelude::*;
 //! #
 //! # #[allow(dead_code)]
+//! # #[cfg(feature = "cursors")]
 //! # async fn example(object_store: ObjectStore<'_>) -> indexed_db_futures::Result<()> {
 //! let Some(mut cursor) = object_store.open_cursor().await? else {
 //!   log::debug!("Cursor empty");
@@ -182,6 +187,8 @@
 //! # Iterating an index as a stream
 //!
 //! ```
+//! # #[cfg(all(feature = "serde", feature = "indices", feature = "cursors", feature = "streams"))]
+//! # mod wrapper {
 //! # use indexed_db_futures::object_store::ObjectStore;
 //! # use indexed_db_futures::prelude::*;
 //! # use serde::{Deserialize, Serialize};
@@ -203,6 +210,7 @@
 //! let stream = cursor.stream_ser::<UserRef>();
 //! let records = stream.try_collect::<Vec<_>>().await?;
 //! # Ok(())
+//! # }
 //! # }
 //! ```
 //!
