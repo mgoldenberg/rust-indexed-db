@@ -162,11 +162,11 @@ impl Drop for Transaction<'_> {
     fn drop(&mut self) {
         self.listeners.free_listeners();
 
-        if !self.done {
-            let _ = match self.on_drop {
-                OnTransactionDrop::Abort => self.as_sys().abort(),
-                OnTransactionDrop::Commit => self.as_sys().do_commit(),
-            };
+        // Given that the default behavior in JavaScript is to commit the
+        // transaction when it is dropped, we only need to perform an action
+        // when we want to abort the transaction.
+        if !self.done & matches!(self.on_drop, OnTransactionDrop::Abort) {
+            let _ = self.as_sys().abort();
         }
     }
 }
