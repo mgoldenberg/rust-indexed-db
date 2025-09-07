@@ -59,7 +59,7 @@ impl OpenDbListener {
             listener: Closure::once(move |evt: web_sys::IdbVersionChangeEvent| {
                 let res = Database::from_event(&evt).and_then(|db| {
                     Transaction::from_raw_version_change_event(&db, &evt).and_then(|mut tx| {
-                        callback(VersionChangeEvent::new(evt), &tx).inspect(|_| {
+                        callback(VersionChangeEvent::new(evt), &tx).inspect(|()| {
                             // If the callback succeeded, we want to ensure that
                             // the transaction is committed when dropped and not
                             // aborted.
@@ -181,7 +181,7 @@ const _: () = {
                         let result = match Transaction::from_raw_version_change_event(&db, &evt) {
                             Ok(mut transaction) => {
                                 match callback(VersionChangeEvent::new(evt), &transaction).await {
-                                    Ok(_) => {
+                                    Ok(()) => {
                                         // If the callback succeeded, we want to ensure that
                                         // the transaction is committed when dropped and not
                                         // aborted.
