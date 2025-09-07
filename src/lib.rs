@@ -80,9 +80,9 @@
 //! ## Opening a database & making some schema changes
 //!
 //! ```
-//! use indexed_db_futures::database::Database;
+//! use indexed_db_futures::database::{Database, VersionChangeEvent};
 //! use indexed_db_futures::prelude::*;
-//! use indexed_db_futures::transaction::TransactionMode;
+//! use indexed_db_futures::transaction::{Transaction, TransactionMode};
 //!
 //! # async fn example() -> indexed_db_futures::OpenDbResult<()> {
 //! # #[allow(dead_code)]
@@ -92,7 +92,8 @@
 //!       log::debug!("DB upgrade blocked: {:?}", event);
 //!       Ok(())
 //!     })
-//!     .with_on_upgrade_needed_fut(|event, db| async move {
+//!     .with_on_upgrade_needed_fut(async |event: VersionChangeEvent, tx: &Transaction<'_>| {
+//!         let db = tx.db();
 //!         // Convert versions from floats to integers to allow using them in match expressions
 //!         let old_version = event.old_version() as u64;
 //!         let new_version = event.new_version().map(|v| v as u64);
